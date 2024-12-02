@@ -9,13 +9,6 @@ use function Core\request;
 
 class ShoppingController
 {
-    public function index($request)
-    {
-        $db = App::resolve('Core\Database\Database');
-        Response::view('notes.index', [
-            'name' => request('name','John Doe'),
-        ]);
-    }
 
     public function getAllItems($request)
     {
@@ -26,10 +19,24 @@ class ShoppingController
 
     public function addItem($request)
     {
+        // Since the frontend sends the data as JSON (Content-Type: application/json),
+        // and not as form data the PHP superglobal $_POST is empty.
+        // We need to read the raw post data and decode it.
         $rawData = file_get_contents('php://input'); // raw post data
         $data = json_decode($rawData, true);
-        $name = $data['name'];
-        $amount = $data['amount'];
+
+        if (!isset($data['name']) || !isset($data['amount'])) {
+            // If the request was send via a different tool like Postman
+            // and the data was sent as form data, we can use the request() function
+            $name = request('name');
+            $amount = request('amount');
+            if (!$name || !$amount) {
+                abort(400, 'Invalid data'); // Bad request
+            }
+        } else {
+            $name = $data['name'];
+            $amount = $data['amount'];
+        }
 
         $db = App::resolve('Core\Database\Database');
         $db->query('INSERT INTO shopping_items (name, amount) VALUES (:name, :amount)', [
@@ -55,9 +62,22 @@ class ShoppingController
 
     public function updateItem($request, $name)
     {
+        // Since the frontend sends the data as JSON (Content-Type: application/json),
+        // and not as form data the PHP superglobal $_POST is empty.
+        // We need to read the raw post data and decode it.
         $rawData = file_get_contents('php://input'); // raw post data
         $data = json_decode($rawData, true);
-        $amount = $data['amount'];
+
+        if (!isset($data['amount'])) {
+            // If the request was send via a different tool like Postman
+            // and the data was sent as form data, we can use the request() function
+            $amount = request('amount');
+            if (!$amount) {
+                abort(400, 'Invalid data'); // Bad request
+            }
+        } else {
+            $amount = $data['amount'];
+        }
 
         $db = App::resolve('Core\Database\Database');
         $db->query('UPDATE shopping_items SET amount = :amount WHERE name = :name', [
