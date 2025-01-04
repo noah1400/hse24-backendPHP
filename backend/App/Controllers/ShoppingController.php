@@ -39,10 +39,25 @@ class ShoppingController
         }
 
         $db = App::resolve('Core\Database\Database');
-        $db->query('INSERT INTO shopping_items (name, amount) VALUES (:name, :amount)', [
-            'name' => $name,
-            'amount' => $amount,
-        ]);
+
+        // check if item already exists
+        $item = $db->select('shopping_items', ['name' => $name]);
+
+        if (!empty($item)) {
+            $item = $item[0];
+            $id = $item['id'];
+            $newAmount = $item['amount'] + $amount;
+            $db->query('UPDATE shopping_items SET amount = :amount WHERE id = :id', [
+                'id' => $id,
+                'amount' => $newAmount,
+            ]);
+        } else {
+
+            $db->query('INSERT INTO shopping_items (name, amount) VALUES (:name, :amount)', [
+                'name' => $name,
+                'amount' => $amount,
+            ]);
+        }
 
         // get added item
         $lastId = $db->lastInsertId();
