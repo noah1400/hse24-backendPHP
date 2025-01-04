@@ -1,17 +1,6 @@
 version: '3.8'
 
 services:
-  nginx-proxy:
-    build:
-      context: .
-      dockerfile: nginx.Dockerfile
-    ports:
-      - "80:80"
-    depends_on:
-      - php-backend
-      - flask-frontend
-    networks:
-      - app-network
 
   php-backend:
     build:
@@ -21,6 +10,8 @@ services:
       - ./backend:/var/www/html
     networks:
       - app-network
+    ports:
+      - "80:80"
 
   flask-frontend:
     image: maeddes/frontendflask:hse24
@@ -28,6 +19,8 @@ services:
       - API_URL=http://php-backend:80/shopping
     networks:
       - app-network
+    ports:
+      - "5000:5000"
 
   mysql:
     image: mysql:8.0
