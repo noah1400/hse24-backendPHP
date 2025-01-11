@@ -11,6 +11,26 @@ The routes for the backend are defined in `./backend/Routes/routes.php`
 
 The implementations of the endpoints can be found in the controllers `./backend/App/Controllers/*.php`
 
+### Running the application
+
+To run the application, you need to have Docker and Docker Compose installed on your machine.
+To test the kube deployment, you need to have minikube installed.
+
+1. Enter the root directory of the project
+2. Run `docker-compose up --build`
+3. The application should be available at `http://localhost:5000`
+
+#### Testing the Kubernetes deployment
+
+1. Start minikube with `minikube start`
+2. Enter the minikube context with `eval $(minikube docker-env)`
+3. Build the image with `docker build -t php-backend:1.0.0 -f backend.Dockerfile .`
+4. Apply the deployment with `kubectl apply -f ./k8s/deployment.yml`
+5. Apply the service with `kubectl apply -f ./k8s/services.yml`
+6. Apply the mysql deployment with `kubectl apply -f ./k8s/mysql.yml`
+7. Apply the mysql configmap with `kubectl apply -f ./k8s/mysql-configmap.yml`
+8. Access the frontend with `minikube service flask-frontend`
+
 ### 12-Factor Principles Applied
 
 1. **Codebase**: Ein Git-Repository für die gesamte Anwendung.
