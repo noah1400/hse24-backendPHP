@@ -8,7 +8,7 @@ return $config = [
     ],
     "db" => [
         "connection" => "mysql",
-        "host" => "mysql",
+        "host" => "mysql-db",
         "port" => "3306",
         "name" => "shopping",
         "username" => "shopping",

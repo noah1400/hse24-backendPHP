@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-backend
+  template:
+    metadata:
+      labels:
+        app: php-backend
+    spec:
+      containers:
+      - name: php-backend
+        image: php-backend:1.0.0  # Replace with your image
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-frontend
+  template:
+    metadata:
+      labels:
+        app: flask-frontend
+    spec:
+      containers:
+      - name: flask-frontend
+        image: maeddes/frontendflask:hse24
+        ports:
+        - containerPort: 5000
+        env:
+        - name: API_URL
+          value: "http://php-backend/shopping"  # php-backend is the k8s service name
